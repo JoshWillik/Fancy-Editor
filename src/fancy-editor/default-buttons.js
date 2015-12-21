@@ -1,13 +1,11 @@
-const util = require('../util')
-
 let makeH1Button = {
-  title: 'H1',
-  onClick: el => util.convertElement(el, 'h1')
+  text: 'H1',
+  action: editor => editor.runCommand('transform-tag', ['h1'])
 }
 
 let makePButton = {
-  title: 'P',
-  onClick: el => util.convertElement(el, 'p')
+  text: 'P',
+  action: editor => editor.runCommand('transform-tag', ['p'])
 }
 
 module.exports = [

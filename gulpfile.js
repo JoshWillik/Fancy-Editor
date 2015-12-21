@@ -13,6 +13,7 @@ var nib = require('nib');
 
 function logError (err) {
   console.log(err.toString());
+  this.emit('end')
 }
 
 gulp.task('serve', serve('dist'));

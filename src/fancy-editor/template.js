@@ -1,7 +1,7 @@
 module.exports =
 `
-<div class="viewport" contenteditable="true">
+<div class="menu"></div>
+<div class="editor">
   <p>Hello</p>
 </div>
-<div class="menu"></div>
 `
