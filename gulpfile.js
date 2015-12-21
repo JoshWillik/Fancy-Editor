@@ -19,36 +19,42 @@ function logError (err) {
 gulp.task('serve', serve('dist'));
 
 gulp.task('css', function () {
-  return gulp.src('./src/fancy-editor.styl')
+  return gulp.src('./src/themes/*.styl')
     .pipe(stylus({
       use: nib(),
       import: ['nib']
     }))
-      // .on('error', logError)
-    .pipe(gulp.dest('./dist'))
+      .on('error', logError)
+    .pipe(gulp.dest('./dist/css'))
 });
+
+gulp.task('demos', function () {
+  return gulp.src('./src/demos/*')
+    .pipe(gulp.dest('./dist/demos'))
+})
 
 gulp.task('javascript', function () {
   return browserify({
-    entries: './src/fancy-editor.js',
+    entries: './src/fancybox.js',
     debug: true,
   })
       .on('error', logError)
     .transform('babelify', {presets: ['es2015']})
     .bundle()
       .on('error', logError)
-    .pipe(source('fancy-editor.js'))
+    .pipe(source('fancybox.js'))
     .pipe(buffer())
     .pipe(sourcemaps.init({loadMaps: true}))
       // .pipe(uglify())
       .on('error', gutil.log)
-    // .pipe(sourcemaps.write('./'))
-    .pipe(gulp.dest('./dist'));
+    .pipe(sourcemaps.write('./'))
+    .pipe(gulp.dest('./dist/js'));
 });
 
-gulp.task('default', ['javascript', 'css'])
+gulp.task('default', ['javascript', 'css', 'demos'])
 
-gulp.task('watch', ['serve', 'javascript', 'css'], function () {
+gulp.task('watch', ['default', 'serve'], function () {
   gulp.watch('./src/**/*.js', ['javascript'])
-  gulp.watch('./src/*.styl', ['css'])
+  gulp.watch('./src/themes/*.styl', ['css'])
+  gulp.watch('./src/demos/*', ['demos'])
 })

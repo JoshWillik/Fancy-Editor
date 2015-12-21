@@ -5,10 +5,10 @@ const defaultCommands = require('./default-commands')
 const defaultButtons = require('./default-buttons')
 const template = require('./template')
 
-module.exports = class FancyEditor {
+module.exports = class FancyBox {
   constructor () {
     this.el = document.createElement('div')
-    this.el.className = 'fancy-editor'
+    this.el.className = 'fancybox'
     this.el.innerHTML = template
 
     this.editor = new Editor(this)
