@@ -8,7 +8,13 @@ let makePButton = {
   action: editor => editor.runCommand('transform-tag', ['p'])
 }
 
+let addSection = {
+  text: '+',
+  action: editor => editor.getActiveEditor().insertSection().insertParagraph().focus()
+}
+
 module.exports = [
   makeH1Button,
-  makePButton
+  makePButton,
+  addSection,
 ]

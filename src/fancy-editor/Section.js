@@ -1,22 +1,36 @@
-const Paragraph = require('./Paragraph')
+const TextElement = require('./TextElement')
 
 module.exports = class Section {
   constructor (text) {
     this.el = document.createElement('div')
-    this.el.contentEditable = false
+    this.el.className = 'section'
 
     this.paragraphs = []
+    this.id = Math.round(Math.random() * 0xffff)
+    this.el.dataset.id = this.id
   }
 
-  render () {
-    this.p.innerHTML = this.text
+  getActiveElement () {
+    if (!this.el.contains(document.getSelection().anchorNode)) {
+      return null
+    }
+
+    for (var i = 0; i < this.paragraphs.length; i++) {
+      if (this.paragraphs[i].isActive()) {
+        return this.paragraphs[i]
+      }
+    }
+    return null
+  }
+
+  isActive () {
+    return !!this.getActiveElement()
   }
 
   insertParagraph () {
-    let paragraph = new Paragraph
+    let paragraph = new TextElement
 
-    paragraph.el.addEventListener('focus', evt => {
-      console.log('triggering focus')
+    paragraph.el.addEventListener('selectionchange', evt => {
       let event = new CustomEvent('select', {
         bubbles: true,
         cancelable: true,
@@ -29,11 +43,11 @@ module.exports = class Section {
     return paragraph
   }
 
-  updateParagraph () {
+  updateTextElement () {
 
   }
 
-  deleteParagraph () {
+  deleteTextElement () {
 
   }
 }

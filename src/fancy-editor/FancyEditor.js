@@ -23,6 +23,10 @@ module.exports = class FancyEditor {
     util.replaceElement(this.el.querySelector('.editor'), this.editor.el)
   }
 
+  init () {
+    this.getActiveEditor().bootstrap()
+  }
+
   registerCommand (name, action) {
     this.commands[name] = action
   }

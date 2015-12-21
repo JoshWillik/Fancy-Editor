@@ -13,7 +13,6 @@ module.exports = class Editor {
     this.activeSection = null
 
     this.attachListeners()
-    this.bootstrap()
   }
 
   bootstrap () {
@@ -24,31 +23,23 @@ module.exports = class Editor {
   }
 
   attachListeners () {
-    this.el.addEventListener('click', evt => {
-      if (!evt.target.classList.contains('section')) {
-        return
-      }
-    })
-
     this.el.addEventListener('keydown', evt => {
       if (evt.keyCode === keycodes.ENTER) {
-        evt.preventDefault()
-        this.getActiveSection().insertParagraph().focus()
-      }
+        if (!evt.shiftKey) {
+          evt.preventDefault()
+        }
 
-      if (evt.target === this.el && keycodes.isNormalCharacter(evt.keyCode)) {
+        if (evt.ctrlKey) {
+          this.insertSection().insertParagraph().focus()
+        } else if (!evt.shiftKey) {
+          this.getActiveSection().insertParagraph().focus()
+        }
       }
     })
   }
 
   insertSection () {
     let section = new Section
-
-    section.el.addEventListener('select', evt => {
-      console.log('element selected')
-      this.activeSection = section
-    })
-
     this.sections.push(section)
     this.el.appendChild(section.el)
     return section
@@ -63,7 +54,13 @@ module.exports = class Editor {
   }
 
   getActiveSection () {
-    return this.activeSection
+    for (var i = 0; i < this.sections.length; i++) {
+      if (this.sections[i].isActive()) {
+        return this.sections[i]
+      }
+    }
+
+    return null
   }
 
   createSection () {
@@ -108,5 +105,10 @@ module.exports = class Editor {
     selection.removeAllRanges()
     selection.addRange(range)
     el.focus()
+  }
+
+  getActiveElement () {
+    let section = this.getActiveSection()
+    return section && section.getActiveElement()
   }
 }
