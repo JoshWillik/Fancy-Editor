@@ -5,6 +5,10 @@ module.exports = class Section {
     this.el = document.createElement('div')
     this.el.className = 'section'
 
+    this.content = document.createElement('div')
+    this.content.contentEditable = true
+    this.el.appendChild(this.content)
+
     this.paragraphs = []
     this.id = Math.round(Math.random() * 0xffff)
     this.el.dataset.id = this.id
@@ -39,15 +43,7 @@ module.exports = class Section {
     })
 
     this.paragraphs.push(paragraph)
-    this.el.appendChild(paragraph.el)
+    this.content.appendChild(paragraph.el)
     return paragraph
-  }
-
-  updateTextElement () {
-
-  }
-
-  deleteTextElement () {
-
   }
 }

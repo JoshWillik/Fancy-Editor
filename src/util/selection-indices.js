@@ -7,70 +7,41 @@ function addNodeLengths (previous, node) {
   return previous
 }
 
-function characterIndex (selection) {
+function nodeStartOffset (node) {
+  let parent = node.parentNode
+  let children = Array.from(parent.childNodes)
+  let index = children.indexOf(node)
+  return children.slice(0, index).reduce(addNodeLengths, 0)
+}
+
+function selectionIndices (selection) {
   let anchor = selection.anchorNode
   let focus = selection.focusNode
 
-  if (anchor === focus && focus.nodeType !== Node.TEXT_NODE) {
-    let children = Array.from(anchor.childNodes)
-    let start = Math.min(selection.anchorOffset, selection.focusOffset)
-    let end = Math.max(selection.anchorOffset, selection.focusOffset)
-    let startIndex = children.slice(0, start).reduce(addNodeLengths, 0)
-    let endIndex = children.slice(start, end).reduce(addNodeLengths, 0)
-    return [startIndex, endIndex]
-  }
-
-  let parent
-  if (focus.nodeType === Node.TEXT_NODE) {
-    parent = focus.parentNode
-  }
+  let anchorOffset
   if (anchor.nodeType === Node.TEXT_NODE) {
-    parent = anchor.parentNode
-  }
-
-  let children = Array.from(parent.childNodes)
-  let anchorIndex = children.indexOf(anchor)
-  let focusIndex = children.indexOf(focus)
-  let startIndex, endIndex
-  let startNode, endNode
-  let startOffset, endOffset
-  if (anchorIndex > focusIndex) {
-    startOffset = selection.focusOffset
-    endOffset = selection.anchorOffset
-    startIndex = focusIndex
-    endIndex = anchorIndex
-    startNode = focus
-    endNode = anchor
+    anchorOffset = selection.anchorOffset + nodeStartOffset(anchor)
+  } else {
+    if (anchorOffset === anchor.childNodes.length) {
+      anchorOffset = Array.from(anchor.childNodes).reduce(addNodeLengths, 0)
     } else {
-    startOffset = selection.anchorOffset
-    endOffset = selection.focusOffset
-    startIndex = anchorIndex
-    endIndex = focusIndex
-    startNode =  anchor
-    endNode = focus
+      anchorOffset = nodeStartOffset(anchor.childNodes[selection.anchorOffset])
+    }
   }
 
-  let startValueShift = 0
-  let endValueShift = 0
-  if (startNode.nodeType === Node.TEXT_NODE) {
-    startOffset = startValueShift
-    startIndex += 1
-    startNode = startNode.parentNode
+  let focusOffset
+  if (focus.nodeType === Node.TEXT_NODE) {
+    focusOffset = selection.focusOffset + nodeStartOffset(focus)
+  } else {
+    if (focusOffset === focus.childNodes.length) {
+      focusOffset = Array.from(focus.childNodes).reduce(addNodeLengths, 0)
+    } else {
+      focusOffset = nodeStartOffset(focus.childNodes[selection.focusOffset])
+    }
   }
-  if (endNode.nodeType === Node.TEXT_NODE) {
-    endOffset = endNode.length - endValueShift
-    // endIndex -= 1
-    endNode = endNode.parentNode
-  }
-  let indices = characterIndex({
-    anchorNode: startNode,
-    focusNode: endNode,
-    anchorOffset: startIndex,
-    focusOffset: focusIndex
-  })
-  indices[0] += startOffset
-  indices[1] -= endOffset
-  return indices
+
+  return [anchorOffset, focusOffset].sort((a, b) => a - b)
 }
 
-module.exports = characterIndex
+window.selectionIndices = selectionIndices
+module.exports = selectionIndices

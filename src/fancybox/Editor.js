@@ -35,21 +35,49 @@ module.exports = class Editor {
         } else if (!evt.shiftKey) {
           this.getActiveSection().insertParagraph().focus()
         }
+        return
       }
+
+      if (evt.keyCode === keycodes.DELETE) {
+        evt.preventDefault()
+        let range = selectionIndices(document.getSelection())
+        this.getActiveSection().getActiveElement().update({
+          action: 'delete',
+          start: range[0],
+          end: range[1]
+        })
+        return
+      }
+    })
+
+    this.el.addEventListener('keypress', evt => {
+      if (evt.ctrlKey) {
+        return
+      }
+
+      evt.preventDefault()
+
+      let range = selectionIndices(document.getSelection())
+      let character = evt.keyCode ? '\n' : String.fromCodePoint(evt.charCode)
+      this.getActiveSection().getActiveElement().update({
+        action: 'add',
+        start: range[0],
+        end: range[1],
+        text: character
+      })
     })
 
     this.el.addEventListener('keyup', evt => {
       if (keycodes.isArrowKey(evt.keyCode)) {
         let selection = document.getSelection()
         let indices = selectionIndices(selection)
-        console.log('selection', indices)
       }
     })
 
     this.el.addEventListener('click', evt => {
       let selection = document.getSelection()
       let indices = selectionIndices(selection)
-      console.log('selection', indices)
+      console.log(indices)
     })
   }
 

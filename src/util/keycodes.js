@@ -1,7 +1,6 @@
 // Pulled from stackoverflow
 // https://stackoverflow.com/a/12467610/1630446
 function isNormalCharacter (code) {
-
   // Numbers
   if (code > 47 && code < 58) {
     return true
@@ -38,4 +37,5 @@ module.exports = {
   isNormalCharacter,
   isArrowKey,
   ENTER: 13,
+  DELETE: 8,
 }
