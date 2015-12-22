@@ -30,7 +30,12 @@ function isNormalCharacter (code) {
   return false
 }
 
+function isArrowKey (code) {
+  return code >= 37 && code <= 40
+}
+
 module.exports = {
   isNormalCharacter,
+  isArrowKey,
   ENTER: 13,
 }

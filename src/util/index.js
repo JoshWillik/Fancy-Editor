@@ -4,6 +4,7 @@ let util = {
   replaceElement: require('./replace-element'),
   isDecendant: require('./is-decendant'),
   keycodes: require('./keycodes'),
+  selectionIndices: require('./selection-indices'),
 }
 
 module.exports = util

@@ -1,6 +1,7 @@
 const FancyElement = require('./Element')
 const Section = require('./Section')
 const convert = require('../util/convert-element')
+const selectionIndices = require('../util/selection-indices')
 const keycodes = require('../util/keycodes')
 
 module.exports = class Editor {
@@ -35,6 +36,20 @@ module.exports = class Editor {
           this.getActiveSection().insertParagraph().focus()
         }
       }
+    })
+
+    this.el.addEventListener('keyup', evt => {
+      if (keycodes.isArrowKey(evt.keyCode)) {
+        let selection = document.getSelection()
+        let indices = selectionIndices(selection)
+        console.log('selection', indices)
+      }
+    })
+
+    this.el.addEventListener('click', evt => {
+      let selection = document.getSelection()
+      let indices = selectionIndices(selection)
+      console.log('selection', indices)
     })
   }
 
