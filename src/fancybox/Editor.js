@@ -1,7 +1,7 @@
 const FancyElement = require('./Element')
 const Section = require('./Section')
 const convert = require('../util/convert-element')
-const selectionIndices = require('../util/selection-indices')
+const cursorLocation = require('../util/cursor-location')
 const keycodes = require('../util/keycodes')
 
 module.exports = class Editor {
@@ -18,66 +18,21 @@ module.exports = class Editor {
 
   bootstrap () {
     this.insertSection()
-      .insertParagraph()
+      .getParagraph(0)
       .setText('Testing')
-      .focus()
+      .focus('end')
   }
 
   attachListeners () {
-    this.el.addEventListener('keydown', evt => {
-      if (evt.keyCode === keycodes.ENTER) {
-        if (!evt.shiftKey) {
-          evt.preventDefault()
-        }
-
-        if (evt.ctrlKey) {
-          this.insertSection().insertParagraph().focus()
-        } else if (!evt.shiftKey) {
-          this.getActiveSection().insertParagraph().focus()
-        }
-        return
-      }
-
-      if (evt.keyCode === keycodes.DELETE) {
-        evt.preventDefault()
-        let range = selectionIndices(document.getSelection())
-        this.getActiveSection().getActiveElement().update({
-          action: 'delete',
-          start: range[0],
-          end: range[1]
-        })
-        return
-      }
-    })
-
     this.el.addEventListener('keypress', evt => {
-      if (evt.ctrlKey) {
+      if (evt.defaultPrevented) {
         return
       }
 
-      evt.preventDefault()
-
-      let range = selectionIndices(document.getSelection())
-      let character = evt.keyCode ? '\n' : String.fromCodePoint(evt.charCode)
-      this.getActiveSection().getActiveElement().update({
-        action: 'add',
-        start: range[0],
-        end: range[1],
-        text: character
-      })
-    })
-
-    this.el.addEventListener('keyup', evt => {
-      if (keycodes.isArrowKey(evt.keyCode)) {
-        let selection = document.getSelection()
-        let indices = selectionIndices(selection)
+      if (evt.keyCode === keycodes.ENTER && evt.ctrlKey) {
+        evt.preventDefault()
+        this.getActiveSection().insertParagraph().focus()
       }
-    })
-
-    this.el.addEventListener('click', evt => {
-      let selection = document.getSelection()
-      let indices = selectionIndices(selection)
-      console.log(indices)
     })
   }
 

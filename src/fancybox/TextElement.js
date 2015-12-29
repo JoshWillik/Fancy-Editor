@@ -12,13 +12,23 @@ module.exports = class TextElement extends Element {
   }
 
   render () {
-    this.el.innerHTML = this.text
+    this.el.innerHTML = this.text.replace(/\n/g, '<br>')
   }
 
   setText (text) {
     this.text = text || ''
     this.render()
     return this
+  }
+
+  getText (start, end) {
+    start = start || 0
+    end = end || this.text.length
+    return this.text.slice(start, end)
+  }
+
+  getLength () {
+    return this.getText().length
   }
 
   setTag (type) {
@@ -37,34 +47,46 @@ module.exports = class TextElement extends Element {
       if (start > 0 && start === end) {
         start -= 1
       }
-      this.deleteRange(start, end)
+      this.delete(start, end)
       newFocus = start
-    }
-
-    if (payload.action === 'add') {
-      this.replaceRange(payload.start, payload.end, payload.text)
-      newFocus = payload.start + 1
     }
 
     this.render()
     this.focus(newFocus)
   }
 
-  deleteRange (start, end) {
+  insert (text, index) {
+    this.replaceRange(index, index, text)
+    this.focus(index + text.length)
+  }
+
+  delete (start, end) {
     this.replaceRange(start, end, '')
   }
 
   replaceRange (start, end, text) {
-    this.text = this.text.slice(0, start) + (text || "") + this.text.slice(end)
+    text = text || ''
+    this.text = this.text.slice(0, start) + text + this.text.slice(end)
+    this.render()
+    this.focus(start + text.length)
   }
 
   focus (index) {
     index = index || 0
 
+    if (index === 'end') {
+      index = this.getLength()
+    }
+
     let range = document.createRange()
     let children = Array.from(this.el.childNodes)
     let candidates = children.slice()
     let child
+
+    if (!candidates.length) {
+      range.setStart(this.el, 0)
+    }
+
     while (child = candidates.shift()) {
       if (child.nodeType === Node.TEXT_NODE) {
         if (index > child.length) {

@@ -2,9 +2,9 @@ let util = {
   activeElement: require('./active-element'),
   convertElement: require('./convert-element'),
   replaceElement: require('./replace-element'),
-  isDecendant: require('./is-decendant'),
   keycodes: require('./keycodes'),
-  selectionIndices: require('./selection-indices'),
+  cursorLocation: require('./cursor-location'),
+  nodeIndex: require('./node-index'),
 }
 
 module.exports = util

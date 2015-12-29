@@ -38,4 +38,5 @@ module.exports = {
   isArrowKey,
   ENTER: 13,
   DELETE: 8,
+  ESCAPE: 27,
 }
