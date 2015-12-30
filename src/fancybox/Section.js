@@ -25,7 +25,6 @@ module.exports = class Section {
   attachListeners () {
     this.content.addEventListener('keydown', evt => {
       if (evt.keyCode === keycodes.ESCAPE) {
-        console.log(this.getSelectedRange())
         return
       }
 
@@ -45,7 +44,22 @@ module.exports = class Section {
 
       if (evt.keyCode === keycodes.DELETE) {
         evt.preventDefault()
+
+        let active = this.getActiveElement()
+        let index = this.paragraphs.indexOf(active)
+        if (active && active.getLength() === 0 && index !== 0) {
+          this.removeParagraph(active)
+          this.getParagraph(index - 1).focus('end')
+          return
+        }
+
         let range = this.getSelectedRange()
+        if (range[0] === range[1] && this.cursorOnParagraphBeginning() && index !== 0) {
+          let previousLength = this.getParagraph(index - 1).getLength()
+          this.joinParagraphs(index - 1)
+          this.getParagraph(index - 1).focus(previousLengths)
+          return
+        }
         if (range[0] === range[1] && range[0] > 0) {
           range[0] -= 1
         }
@@ -77,10 +91,10 @@ module.exports = class Section {
   }
 
   deleteRange (start, end) {
-    let counter = 0
     let paragraphs = this.paragraphs.slice()
+    let shouldJoin = false
+    let counter = 0
     let p
-    let shouldJoin = true
 
     while (p = paragraphs.shift()) {
       let length = p.getLength()
@@ -122,6 +136,13 @@ module.exports = class Section {
     }
   }
 
+  cursorOnParagraphBeginning (index) {
+    let s = document.getSelection()
+
+    let paragraphEls = this.paragraphs.map(p => p.el)
+    return s.anchorOffset === 0 && paragraphEls.indexOf(s.anchorNode.parentNode) !== -1
+  }
+
   joinParagraphs (start) {
     let counter = 0
     for (var i = 0; i < this.paragraphs.length; i++) {
@@ -156,7 +177,7 @@ module.exports = class Section {
 
   removeParagraph (p) {
     let index = this.paragraphs.indexOf(p)
-    this.paragraphs = this.paragraphs.splice(index, 1)
+    this.paragraphs.splice(index, 1)
     this.content.removeChild(p.el)
   }
 

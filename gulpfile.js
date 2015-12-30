@@ -1,15 +1,17 @@
 'use strict';
 
-var browserify = require('browserify');
-var gulp = require('gulp');
-var source = require('vinyl-source-stream');
-var buffer = require('vinyl-buffer');
-var gutil = require('gulp-util');
-var uglify = require('gulp-uglify');
-var sourcemaps = require('gulp-sourcemaps');
-var serve = require('gulp-serve');
-var stylus = require('gulp-stylus');
-var nib = require('nib');
+const browserify = require('browserify');
+const gulp = require('gulp');
+const source = require('vinyl-source-stream');
+const buffer = require('vinyl-buffer');
+const gutil = require('gulp-util');
+const uglify = require('gulp-uglify');
+const sourcemaps = require('gulp-sourcemaps');
+const serve = require('gulp-serve');
+const stylus = require('gulp-stylus');
+const nib = require('nib');
+const glob = require('glob')
+const es = require('event-stream')
 
 function logError (err) {
   console.log(err.toString());
@@ -33,23 +35,28 @@ gulp.task('demos', function () {
     .pipe(gulp.dest('./dist/demos'))
 })
 
-gulp.task('javascript', function () {
-  return browserify({
-    entries: './src/fancybox.js',
-    debug: true,
+gulp.task('javascript', function (done) {
+  glob('src/{fancybox,tests/**}.js', (err, files) => {
+    let tasks = files.map(file => {
+      return browserify([file], {
+        debug: true,
+      })
+          .on('error', logError)
+        .transform('babelify', {presets: ['es2015']})
+        .bundle()
+          .on('error', logError)
+        .pipe(source(file.split('/').slice(1).join('/')))
+        .pipe(buffer())
+        .pipe(sourcemaps.init({loadMaps: true}))
+          // .pipe(uglify())
+          .on('error', gutil.log)
+        .pipe(sourcemaps.write('./'))
+        .pipe(gulp.dest('./dist/js'));
+    })
+
+    es.merge(tasks).on('end', done)
   })
-      .on('error', logError)
-    .transform('babelify', {presets: ['es2015']})
-    .bundle()
-      .on('error', logError)
-    .pipe(source('fancybox.js'))
-    .pipe(buffer())
-    .pipe(sourcemaps.init({loadMaps: true}))
-      // .pipe(uglify())
-      .on('error', gutil.log)
-    .pipe(sourcemaps.write('./'))
-    .pipe(gulp.dest('./dist/js'));
-});
+})
 
 gulp.task('default', ['javascript', 'css', 'demos'])
 

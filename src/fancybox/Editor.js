@@ -43,14 +43,6 @@ module.exports = class Editor {
     return section
   }
 
-  removeSection () {
-
-  }
-
-  updateSection () {
-
-  }
-
   getActiveSection () {
     for (var i = 0; i < this.sections.length; i++) {
       if (this.sections[i].isActive()) {

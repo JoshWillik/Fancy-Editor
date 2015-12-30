@@ -1,0 +1,1 @@
+window.util = require('../util')
