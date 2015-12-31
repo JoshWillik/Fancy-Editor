@@ -11,7 +11,6 @@ module.exports = class MenuBar {
 
   registerButton (button) {
     this.buttons.push(button)
-    this.fancy.registerCommand(button.name, button.action)
     this.render()
     return this
   }
@@ -19,18 +18,7 @@ module.exports = class MenuBar {
   render () {
     let fragment = document.createDocumentFragment()
     this.buttons.forEach(button => {
-      let el = document.createElement('button')
-      el.className = 'menu-item'
-      el.innerHTML = button.text
-
-      if (button.action) {
-        el.addEventListener('click', event => {
-          event.preventDefault()
-          button.action(this.fancy)
-        })
-      }
-
-      fragment.appendChild(el)
+      fragment.appendChild(button.el)
     })
     this.el.innerHTML = ''
     this.el.appendChild(fragment)

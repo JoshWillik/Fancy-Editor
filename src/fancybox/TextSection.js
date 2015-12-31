@@ -1,3 +1,4 @@
+const Button = require('./Button')
 const TextElement = require('./TextElement')
 const keycodes = require('../util/keycodes')
 const cursorLocation = require('../util/cursor-location')
@@ -242,5 +243,23 @@ module.exports = class Section {
         break
       }
     }
+  }
+
+  static createButton () {
+    return new TextSectionButton
+  }
+}
+
+class TextSectionButton extends Button {
+  constructor () {
+    super()
+    this.setText('Text Section')
+    this.draggable(true)
+  }
+
+  attachDragEvents () {
+    this.el.addEventListener('dragstart', function (evt) {
+      evt.dataTransfer.setData("text/html", 'Testing');
+    })
   }
 }

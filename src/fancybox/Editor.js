@@ -1,9 +1,3 @@
-const FancyElement = require('./Element')
-const Section = require('./Section')
-const convert = require('../util/convert-element')
-const cursorLocation = require('../util/cursor-location')
-const keycodes = require('../util/keycodes')
-
 module.exports = class Editor {
   constructor () {
     this.el = document.createElement('div')
@@ -13,31 +7,20 @@ module.exports = class Editor {
     this.sections = []
     this.activeSection = null
 
-    this.attachListeners()
+    this.addEventListeners()
   }
 
-  bootstrap () {
-    this.insertSection()
-      .getParagraph(0)
-      .setText('Testing')
-      .focus('end')
-  }
-
-  attachListeners () {
-    this.el.addEventListener('keypress', evt => {
-      if (evt.defaultPrevented) {
-        return
-      }
-
-      if (evt.keyCode === keycodes.ENTER && evt.ctrlKey) {
-        evt.preventDefault()
-        this.getActiveSection().insertParagraph().focus()
-      }
+  addEventListeners () {
+    this.el.addEventListener('dragover', evt => {
+      console.log(evt)
+    })
+    this.el.addEventListener('drop', evt => {
+      console.log('dropped', evt)
     })
   }
 
   insertSection () {
-    let section = new Section
+    let section = new TextSection
     this.sections.push(section)
     this.el.appendChild(section.el)
     return section
@@ -51,17 +34,6 @@ module.exports = class Editor {
     }
 
     return null
-  }
-
-  createSection () {
-    let el = document.createElement('div')
-    el.className = 'section'
-    this.sections.push(el)
-    return el
-  }
-
-  createElement (type) {
-    return document.createElement(type)
   }
 
   convertElement (el, type) {
@@ -83,18 +55,6 @@ module.exports = class Editor {
     if (oldEl === this.activeElement) {
       this.activeElement = newEl
     }
-  }
-
-  focusElement (el) {
-    let range = document.createRange()
-    range.setStart(el, 0)
-    range.setEnd(el, 0)
-    range.collapse(true)
-
-    let selection = document.getSelection()
-    selection.removeAllRanges()
-    selection.addRange(range)
-    el.focus()
   }
 
   getActiveElement () {
