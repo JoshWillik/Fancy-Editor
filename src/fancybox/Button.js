@@ -1,10 +1,19 @@
 module.exports = class Button {
-  constructor () {
+  constructor (editor) {
+    this.editor = editor
     this.el = document.createElement('div')
-    this.el.className = 'button'
+    this.el.classList.add('button')
+    this.addEventListeners()
   }
 
-  setText (text) {
+  addEventListeners () {
+    this.el.addEventListener('click', evt => {
+      evt.preventDefault()
+      this.onClick()
+    })
+  }
+
+  title (text) {
     this.el.innerHTML = text
   }
 
@@ -13,5 +22,9 @@ module.exports = class Button {
     if (status) {
       this.attachDragEvents()
     }
+  }
+
+  onClick () {
+    throw new Error('This method should be overriden by a subclass')
   }
 }

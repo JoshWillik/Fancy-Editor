@@ -14,7 +14,7 @@ const glob = require('glob')
 const es = require('event-stream')
 
 function logError (err) {
-  console.log(err.toString());
+  console.log(err.stack);
   this.emit('end')
 }
 

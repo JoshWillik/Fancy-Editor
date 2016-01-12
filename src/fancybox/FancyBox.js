@@ -1,42 +1,59 @@
 const util = require('../util')
 const MenuBar = require('./MenuBar')
 const Editor = require('./Editor')
-const TextSection = require('./TextSection')
-const defaultCommands = require('./default-commands')
-const defaultButtons = require('./default-buttons')
-const template = require('./template')
+const defaultSections = require('../fancybox-sections')
+
+const template =
+  `
+  <div class="menu"></div>
+  <div class="editor">
+    <p>Hello</p>
+  </div>
+  `
 
 module.exports = class FancyBox {
-  constructor () {
+  constructor (options) {
+    options = options || {}
+
     this.el = document.createElement('div')
-    this.el.className = 'fancybox'
+    this.el.classList.add('fancybox')
+    if (options.theme) {
+      this.el.classList.add(`fancybox-${options.theme}`)
+    }
     this.el.innerHTML = template
 
+    this.sections = {}
     this.editor = new Editor(this)
     this.menu = new MenuBar(this)
-
-    this.commands = {}
-
-    defaultCommands.forEach(command => this.registerCommand.apply(this, command))
 
     util.replaceElement(this.el.querySelector('.menu'), this.menu.el)
     util.replaceElement(this.el.querySelector('.editor'), this.editor.el)
 
-    this.menu.registerButton(TextSection.createButton())
+    defaultSections.forEach(Section => this.registerSection(Section))
   }
 
-  init () {
+  registerSection (Section) {
+    this.sections[Section.type] = Section
+    if (Section.Button) {
+      this.menu.registerButton(Section.Button)
+    }
   }
 
-  registerCommand () {
-
+  getSection (key) {
+    return this.sections[key]
   }
 
   getMenu () {
     return this.menu
   }
 
-  getActiveEditor () {
+  getEditor () {
     return this.editor
+  }
+  getJSON () {
+    return this.editor.getJSON()
+  }
+  getHTML () {
+    return this.editor.getHTML()
   }
 }

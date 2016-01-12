@@ -3,14 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <title>Basic FancyBox</title>
+  <style media="screen">
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      padding: 0;
+      margin: 0;
+    }
+  </style>
   <link rel="stylesheet" href="/css/pragmatist.css">
   <script src="/js/fancybox.js"></script>
 </head>
 <body>
   <script>
-    var fancybox = new FancyBox
+    var fancybox = new FancyBox({theme: 'pragmatist'})
     document.body.appendChild(fancybox.el)
-    fancybox.init()
+    var section = fancybox.getEditor().addSection('text').focus()
   </script>
 </body>
 </html>

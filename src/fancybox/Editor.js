@@ -1,9 +1,8 @@
-module.exports = class Editor {
-  constructor () {
+class Editor {
+  constructor (fancybox) {
+    this.fancybox = fancybox
     this.el = document.createElement('div')
     this.el.className = 'editor'
-    this.el.contentEditable = true
-
     this.sections = []
     this.activeSection = null
 
@@ -11,16 +10,13 @@ module.exports = class Editor {
   }
 
   addEventListeners () {
-    this.el.addEventListener('dragover', evt => {
-      console.log(evt)
-    })
-    this.el.addEventListener('drop', evt => {
-      console.log('dropped', evt)
-    })
   }
 
-  insertSection () {
-    let section = new TextSection
+  addSection (section, args=[]) {
+    if (typeof section === 'string') {
+      let Class = this.fancybox.getSection(section)
+      section = new Class(...args)
+    }
     this.sections.push(section)
     this.el.appendChild(section.el)
     return section
@@ -58,7 +54,27 @@ module.exports = class Editor {
   }
 
   getActiveElement () {
-    let section = this.getActiveSection()
-    return section && section.getActiveElement()
+    return (this.getActiveSection() || this.sections[0]).focus()
+  }
+
+  getJSON () {
+    return {
+      sections: this.sections.map(section => section.toJSON())
+    }
+  }
+
+  getHTML () {
+    return this.sections.map(section => section.toHTML()).join('')
+  }
+
+  load (data) {
+    this.el.innerHTML = ''
+    this.sections = []
+    ;(data.sections || []).forEach(sectionData => {
+      let Section = this.fancybox.getSection(sectionData.type)
+      this.addSection(new Section(sectionData.content))
+    })
   }
 }
+
+module.exports = Editor
