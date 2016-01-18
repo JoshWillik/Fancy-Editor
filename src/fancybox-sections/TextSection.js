@@ -425,6 +425,6 @@ TextSection.Button = class TextSectionButton extends Button {
   }
 }
 TextSection.type = 'text'
-TextSectionButton.type = TextSection.type
+TextSection.Button.type = TextSection.type
 
 module.exports = TextSection

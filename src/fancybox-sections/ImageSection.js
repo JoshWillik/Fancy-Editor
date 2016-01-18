@@ -44,6 +44,6 @@ ImageSection.Button = class ImageSectionButton extends Button {
     this.editor.addSection(new ImageSection)
   }
 }
-ImageSectionButton.type = ImageSection.type
+ImageSection.Button.type = ImageSection.type
 
 module.exports = ImageSection

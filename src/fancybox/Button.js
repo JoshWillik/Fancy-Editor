@@ -23,8 +23,4 @@ module.exports = class Button {
       this.attachDragEvents()
     }
   }
-
-  onClick () {
-    throw new Error('This method should be overriden by a subclass')
-  }
 }

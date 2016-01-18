@@ -1,3 +1,5 @@
+const EventEmitter = require('event-emitter')
+
 class Editor {
   constructor (fancybox) {
     this.fancybox = fancybox
@@ -7,6 +9,7 @@ class Editor {
     this.activeSection = null
 
     this.addEventListeners()
+    EventEmitter(this)
   }
 
   addEventListeners () {
@@ -19,6 +22,8 @@ class Editor {
     }
     this.sections.push(section)
     this.el.appendChild(section.el)
+
+    this.emit('sectionadd', section)
     return section
   }
 
